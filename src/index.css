@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────
+   Base — Mobile first
+   ────────────────────────────────────────────── */
+
+html {
+  /* Evita el zoom al hacer foco en inputs en iOS */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8fafc;
+  color: #1e293b;
+  /* Safe area para dispositivos con notch */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Evita scroll horizontal accidental en móvil */
+#root {
+  overflow-x: hidden;
+  min-height: 100dvh;
+}
+
+/* Tap highlight en móvil */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Scrollbar elegante */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 999px;
+}
+
+
