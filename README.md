@@ -35,14 +35,16 @@ Aplicación web progresiva (PWA) para practicar ortografía española al nivel d
 
 | Módulo | Descripción | Ejercicios |
 |---|---|---|
-| **B y V** | Uso correcto de b y v en palabras y verbos | 10 |
-| **La H** | Palabras con h inicial, intercalada y dígrafos | 8 |
-| **LL e Y** | Distinción entre ll e y en escritura | 12 |
-| **G y J** | Uso de g y j ante e, i y en distintas posiciones | 12 |
-| **Tilde diacrítica** | él/el, tú/tu, mí/mi, sé/se, más/mas… | 9 |
-| **La tilde** | Agudas, llanas, esdrújulas y sobresdrújulas | 12 |
-| **Puntuación** | Coma, punto y coma, dos puntos, puntos suspensivos | 12 |
-| **Mayúsculas** | Cuándo y cómo usar las letras mayúsculas | 12 |
+| **B y V** | Uso correcto de b y v en palabras y verbos | ~74 |
+| **La H** | Palabras con h inicial, intercalada y dígrafos | ~59 |
+| **LL e Y** | Distinción entre ll e y en escritura | ~60 |
+| **G y J** | Uso de g y j ante e, i y en distintas posiciones | ~60 |
+| **Tilde diacrítica** | él/el, tú/tu, mí/mi, sé/se, más/mas… | ~52 |
+| **La tilde** | Agudas, llanas, esdrújulas y sobresdrújulas | ~62 |
+| **Puntuación** | Coma, punto y coma, dos puntos, puntos suspensivos | ~59 |
+| **Mayúsculas** | Cuándo y cómo usar las letras mayúsculas | ~60 |
+
+**Total: más de 430 ejercicios** distribuidos en tres niveles de dificultad (fácil, medio, difícil).
 
 El número de ejercicios se calcula automáticamente desde los datos reales — no hay valores hardcodeados.
 
@@ -150,14 +152,14 @@ ortografia/
 │   │   ├── modules.ts             # Definición de los 8 módulos
 │   │   └── exercises/
 │   │       ├── index.ts           # Registro central + helpers
-│   │       ├── bv.ts              # 10 ejercicios B/V
-│   │       ├── h.ts               # 8 ejercicios H
-│   │       ├── ll-y.ts            # 12 ejercicios LL/Y
-│   │       ├── g-j.ts             # 12 ejercicios G/J
-│   │       ├── tilde-diacritica.ts # 9 ejercicios tilde diacrítica
-│   │       ├── tilde-general.ts   # 12 ejercicios tilde general
-│   │       ├── puntuacion.ts      # 12 ejercicios puntuación
-│   │       └── mayusculas.ts      # 12 ejercicios mayúsculas
+│   │       ├── bv.ts              # ~74 ejercicios B/V  (bv-001 → bv-074)
+│   │       ├── h.ts               # ~59 ejercicios H    (h-001  → h-059)
+│   │       ├── ll-y.ts            # ~60 ejercicios LL/Y (lly-001 → lly-060)
+│   │       ├── g-j.ts             # ~60 ejercicios G/J  (gj-001  → gj-060)
+│   │       ├── tilde-diacritica.ts # ~52 ejercicios tilde diacrítica (td-001 → td-052)
+│   │       ├── tilde-general.ts   # ~62 ejercicios tilde general    (tg-001 → tg-062)
+│   │       ├── puntuacion.ts      # ~59 ejercicios puntuación       (pun-001 → pun-059)
+│   │       └── mayusculas.ts      # ~60 ejercicios mayúsculas       (may-001 → may-060)
 │   │
 │   ├── stores/
 │   │   └── progressStore.ts       # Zustand store persistido en localStorage
@@ -196,10 +198,9 @@ ortografia/
 │
 ├── .github/workflows/
 │   ├── ci.yml                     # CI: lint + test + build en cada push
-│   └── deploy.yml                 # Deploy automático a Vercel en main
+│   └── deploy.yml                 # Deploy automático en main
 │
 ├── vite.config.ts                 # Vite + Tailwind v4 + PWA + Vitest
-├── vercel.json                    # Reescritura SPA + caché de assets
 └── package.json
 ```
 
@@ -302,25 +303,20 @@ npx vitest run --reporter=verbose
 
 ## Despliegue
 
-### Vercel (recomendado)
+### Netlify (recomendado)
 
-El repositorio incluye `vercel.json` con configuración para SPA y caché de assets:
+La forma más sencilla es conectar el repositorio de GitHub a Netlify para despliegue continuo:
 
-```bash
-npm install -g vercel
-npm run build
-vercel --prod
-```
+1. Ve a **https://app.netlify.com** → *Add new site* → *Import an existing project*
+2. Conecta con GitHub → selecciona `angelmoratilla/ortografia-eso`
+3. Configuración de build:
+   - **Build command:** `npm run build`
+   - **Publish directory:** `dist`
+4. *Deploy site*
 
-O de forma automática: el workflow `.github/workflows/deploy.yml` despliega a Vercel en cada push a `main`. Requiere los secrets de GitHub:
+A partir de ahí, cada `git push` a `main` despliega automáticamente.
 
-| Secret | Descripción |
-|---|---|
-| `VERCEL_TOKEN` | Token de API de Vercel |
-| `VERCEL_ORG_ID` | ID de organización de Vercel |
-| `VERCEL_PROJECT_ID` | ID del proyecto en Vercel |
-
-### Netlify
+Para deploy manual con la CLI:
 
 ```bash
 npm run build

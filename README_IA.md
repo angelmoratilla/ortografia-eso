@@ -214,17 +214,28 @@ const {
 ### Registro central (`src/data/exercises/index.ts`)
 ```typescript
 export const EXERCISES_BY_MODULE: Record<string, Exercise[]> = {
-  'b-v': BV_EXERCISES,         // 10 ejercicios
-  'h': H_EXERCISES,            //  8 ejercicios
-  'll-y': LLY_EXERCISES,       // 12 ejercicios
-  'g-j': GJ_EXERCISES,         // 12 ejercicios
-  'tilde-diacritica': ...,     //  9 ejercicios
-  'tilde-general': ...,        // 12 ejercicios
-  'puntuacion': ...,           // 12 ejercicios
-  'mayusculas': ...,           // 12 ejercicios
+  'b-v': BV_EXERCISES,         // ~74 ejercicios  (bv-001 → bv-074)
+  'h': H_EXERCISES,            // ~59 ejercicios  (h-001  → h-059)
+  'll-y': LLY_EXERCISES,       // ~60 ejercicios  (lly-001 → lly-060)
+  'g-j': GJ_EXERCISES,         // ~60 ejercicios  (gj-001  → gj-060)
+  'tilde-diacritica': ...,     // ~52 ejercicios  (td-001  → td-052)
+  'tilde-general': ...,        // ~62 ejercicios  (tg-001  → tg-062)
+  'puntuacion': ...,           // ~59 ejercicios  (pun-001 → pun-059)
+  'mayusculas': ...,           // ~60 ejercicios  (may-001 → may-060)
 }
-// Total: 87 ejercicios
+// Total: >430 ejercicios
 ```
+
+### Distribución por tipo de ejercicio
+| Tipo | Total aproximado |
+|---|---|
+| `multiple-choice` | ~130 |
+| `fill-blank` | ~110 |
+| `correct-error` | ~87 |
+| `classify` | ~103 |
+
+### Distribución por dificultad
+Todos los módulos tienen ejercicios en los tres niveles: `'facil'`, `'medio'` y `'dificil'`.
 
 ### `modules.ts` — `totalExercises` es dinámico
 ```typescript
@@ -235,6 +246,11 @@ Esto evita que el número mostrado en pantalla quede desincronizado si se añade
 
 ### Para añadir un ejercicio
 Editar el archivo `.ts` correspondiente y añadir un objeto con la estructura de `Exercise`. El contador se actualiza solo. ID siguiendo el patrón `<modulo>-<NNN>`.
+
+**Próximos IDs libres:**
+- B/V: `bv-075`, H: `h-060`, LL/Y: `lly-061`, G/J: `gj-061`
+- Tilde general: `tg-063`, Tilde diacrítica: `td-053`
+- Puntuación: `pun-060`, Mayúsculas: `may-061`
 
 ### Para añadir un módulo nuevo
 1. Añadir el literal en `ModuleId` en `types/index.ts`
@@ -341,14 +357,8 @@ Setup en `src/test/setup.ts`: solo importa `@testing-library/jest-dom`.
 
 ### `.github/workflows/deploy.yml`
 - Trigger: push a `main`
-- Despliega a Vercel con `amondnet/vercel-action@v25`
-- Requiere 3 secrets en GitHub: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`
-
-### `vercel.json`
-```json
-{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
-```
-Más cabeceras de caché larga (`max-age=31536000, immutable`) para `/assets/`.
+- Despliega a Netlify (o plataforma configurada)
+- Para Netlify con CI: añadir secrets `NETLIFY_AUTH_TOKEN` y `NETLIFY_SITE_ID`
 
 ---
 
@@ -362,8 +372,9 @@ Más cabeceras de caché larga (`max-age=31536000, immutable`) para `/assets/`.
 | Mejora | Dificultad | Descripción |
 |---|---|---|
 | Insignia `master` | Baja | En `progressStore`, añadir lógica que otorgue `master` cuando `unlockedBadges` contiene las otras 5 |
-| Más ejercicios | Baja | Añadir más objetos a los archivos `.ts` existentes — el contador se actualiza solo |
+| Más ejercicios | Baja | >430 ejercicios ya. Próximos IDs libres: bv-075, h-060, lly-061, gj-061, tg-063, td-053, pun-060, may-061 |
 | Módulos adicionales | Media | Puntuación avanzada, oraciones subordinadas, verbos irregulares… seguir el proceso del paso 9 |
+| Filtrado por dificultad | Media | Permitir al alumno seleccionar solo ejercicios fáciles/medios/difíciles desde `ModulePage` |
 | Animación de entrada en móvil | Baja | Las tarjetas de ejercicio ya tienen `AnimatePresence` pero podrían añadir gestos de swipe |
 | Sonidos de feedback | Media | Web Audio API para pitido correcto/incorrecto sin dependencias |
 | Estadísticas por módulo | Media | En `ProfilePage`, mostrar gráfica de aciertos históricos por módulo |
