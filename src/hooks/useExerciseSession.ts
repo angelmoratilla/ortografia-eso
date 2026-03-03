@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react'
 import type { Exercise, ExerciseResult, SessionResult } from '../types'
-import { shuffle } from '../utils'
+import { selectExercisesProgressive } from '../utils'
 
 interface UseExerciseSessionOptions {
   exercises: Exercise[]
@@ -13,7 +13,7 @@ export const useExerciseSession = ({
   moduleId,
   onComplete,
 }: UseExerciseSessionOptions) => {
-  const [queue] = useState<Exercise[]>(() => shuffle(exercises).slice(0, 10))
+  const [queue] = useState<Exercise[]>(() => selectExercisesProgressive(exercises))
   const [currentIndex, setCurrentIndex] = useState(0)
   const [results, setResults] = useState<ExerciseResult[]>([])
   const [answered, setAnswered] = useState<boolean>(false)
