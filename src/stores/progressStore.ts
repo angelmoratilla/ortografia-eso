@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { UserProgress, ModuleId, SessionResult, BadgeId } from '../types'
-import { MODULES } from '../data/modules'
+import { MODULES, SESSIONS_GOAL } from '../data/modules'
 
 // ──────────────────────────────────────────────
 // Estado inicial
@@ -14,6 +14,7 @@ const buildInitialModules = (): UserProgress['modules'] => {
       moduleId: mod.id,
       completed: 0,
       total: mod.totalExercises,
+      sessions: 0,
       xp: 0,
       badges: [],
     }
@@ -90,6 +91,7 @@ export const useProgressStore = create<ProgressStore>()(
             moduleProgress.completed + session.results.length,
             moduleProgress.total,
           )
+          const newSessions = moduleProgress.sessions + 1
 
           // Insignias nuevas
           const newBadges: BadgeId[] = [...prev.unlockedBadges]
@@ -99,7 +101,7 @@ export const useProgressStore = create<ProgressStore>()(
 
           if (prev.totalXP === 0 && xpEarned > 0) addBadge('first-exercise')
           if (correctCount === session.results.length && session.results.length >= 5) addBadge('perfect-score')
-          if (newCompleted >= moduleProgress.total) addBadge('module-complete')
+          if (newSessions >= SESSIONS_GOAL) addBadge('module-complete')
           if (newStreak >= 3) addBadge('streak-3')
           if (newStreak >= 7) addBadge('streak-7')
 
@@ -119,6 +121,7 @@ export const useProgressStore = create<ProgressStore>()(
                 [session.moduleId]: {
                   ...moduleProgress,
                   completed: newCompleted,
+                  sessions: newSessions,
                   xp: moduleProgress.xp + xpEarned,
                   lastPlayed: today,
                 },

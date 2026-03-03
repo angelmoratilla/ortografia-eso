@@ -2,6 +2,7 @@ import React from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { getModuleById } from '../data/modules'
+import { SESSIONS_GOAL } from '../data/modules'
 import { getExercisesForModule } from '../data/exercises'
 import { useProgressStore } from '../stores/progressStore'
 import { Button } from '../components/ui/Button'
@@ -32,8 +33,10 @@ export const ModulePage: React.FC = () => {
   }
 
   const pct = modProgress
-    ? moduleProgressPercent(modProgress.completed, modProgress.total)
+    ? moduleProgressPercent(Math.min(modProgress.sessions ?? 0, SESSIONS_GOAL), SESSIONS_GOAL)
     : 0
+  const sessions = modProgress?.sessions ?? 0
+  const isDone = sessions >= SESSIONS_GOAL
 
   return (
     <div className="min-h-screen bg-slate-50 pb-10">
@@ -56,7 +59,11 @@ export const ModulePage: React.FC = () => {
           <div className="bg-white/20 rounded-2xl p-3">
             <div className="flex justify-between text-sm mb-1.5">
               <span>Progreso</span>
-              <span>{modProgress?.completed ?? 0}/{modProgress?.total ?? 0} ejercicios</span>
+              <span>
+                {isDone
+                  ? '✅ Módulo dominado'
+                  : `${sessions} de ${SESSIONS_GOAL} tandas completadas`}
+              </span>
             </div>
             <ProgressBar value={pct} color="bg-white" height="md" />
           </div>
@@ -93,8 +100,8 @@ export const ModulePage: React.FC = () => {
               <p className="text-xs text-slate-500 mt-0.5">XP ganados</p>
             </div>
             <div className="bg-white rounded-2xl p-3 text-center border border-slate-100 shadow-sm">
-              <p className="text-2xl font-extrabold text-green-600">{modProgress.completed}</p>
-              <p className="text-xs text-slate-500 mt-0.5">Completados</p>
+              <p className="text-2xl font-extrabold text-green-600">{sessions}</p>
+              <p className="text-xs text-slate-500 mt-0.5">Tandas hechas</p>
             </div>
             <div className="bg-white rounded-2xl p-3 text-center border border-slate-100 shadow-sm">
               <p className="text-2xl font-extrabold text-purple-600">{pct}%</p>
@@ -111,7 +118,7 @@ export const ModulePage: React.FC = () => {
               size="lg"
               onClick={() => navigate(`/modulo/${moduleId}/ejercicios`)}
             >
-              🚀 {pct > 0 ? 'Continuar practicando' : 'Empezar a practicar'}
+              🚀 {isDone ? '🔁 Seguir practicando' : sessions > 0 ? 'Continuar practicando' : 'Empezar a practicar'}
             </Button>
           ) : (
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center">

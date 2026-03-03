@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { useProgressStore } from '../stores/progressStore'
 import { ProgressBar } from '../components/ui/ProgressBar'
 import { Button } from '../components/ui/Button'
-import { MODULES } from '../data/modules'
+import { MODULES, SESSIONS_GOAL } from '../data/modules'
 import { levelProgress, moduleProgressPercent } from '../utils'
 
 const BADGES = [
@@ -110,16 +110,20 @@ export const ProfilePage: React.FC = () => {
           <div className="divide-y divide-slate-50">
             {MODULES.map((mod) => {
               const mp = progress.modules[mod.id]
-              const pct = moduleProgressPercent(mp.completed, mp.total)
+              const sessions = mp.sessions ?? 0
+              const pct = moduleProgressPercent(Math.min(sessions, SESSIONS_GOAL), SESSIONS_GOAL)
+              const isDone = sessions >= SESSIONS_GOAL
               return (
                 <div key={mod.id} className="px-4 py-3 flex items-center gap-3">
                   <span className="text-xl">{mod.icon}</span>
                   <div className="flex-1">
                     <div className="flex justify-between text-sm mb-1">
                       <span className="font-medium text-slate-700">{mod.title}</span>
-                      <span className="text-slate-400">{mp.completed}/{mp.total}</span>
+                      <span className="text-slate-400">
+                        {isDone ? '✅' : `${sessions}/${SESSIONS_GOAL}`}
+                      </span>
                     </div>
-                    <ProgressBar value={pct} height="sm" color={`bg-gradient-to-r ${mod.color}`} />
+                    <ProgressBar value={pct} height="sm" color={isDone ? 'bg-green-500' : `bg-gradient-to-r ${mod.color}`} />
                   </div>
                 </div>
               )

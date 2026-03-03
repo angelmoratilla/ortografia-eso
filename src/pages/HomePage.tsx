@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useProgressStore } from '../stores/progressStore'
 import { ProgressBar } from '../components/ui/ProgressBar'
-import { MODULES } from '../data/modules'
+import { MODULES, SESSIONS_GOAL } from '../data/modules'
 import { levelProgress, moduleProgressPercent } from '../utils'
 
 const container = {
@@ -76,8 +76,10 @@ export const HomePage: React.FC = () => {
           >
             {MODULES.map((mod) => {
               const modProgress = progress.modules[mod.id]
-              const pct = moduleProgressPercent(modProgress.completed, modProgress.total)
+              const sessions = modProgress.sessions ?? 0
+              const pct = moduleProgressPercent(Math.min(sessions, SESSIONS_GOAL), SESSIONS_GOAL)
               const hasExercises = modProgress.total > 0
+              const isDone = sessions >= SESSIONS_GOAL
 
               return (
                 <motion.div key={mod.id} variants={item}>
@@ -103,14 +105,16 @@ export const HomePage: React.FC = () => {
                           <div className="flex items-center justify-between mb-1">
                             <h3 className="font-bold text-slate-800">{mod.title}</h3>
                             <span className="text-xs text-slate-500 ml-2 flex-shrink-0">
-                              {modProgress.completed}/{modProgress.total}
+                              {isDone
+                                ? '✅ Dominado'
+                                : `${sessions}/${SESSIONS_GOAL} tandas`}
                             </span>
                           </div>
                           <p className="text-xs text-slate-500 mb-2 line-clamp-1">
                             {mod.description}
                           </p>
                           {hasExercises ? (
-                            <ProgressBar value={pct} color="bg-indigo-500" height="sm" />
+                            <ProgressBar value={pct} color={isDone ? 'bg-green-500' : 'bg-indigo-500'} height="sm" />
                           ) : (
                             <p className="text-xs text-amber-600 font-medium">🚧 Próximamente</p>
                           )}

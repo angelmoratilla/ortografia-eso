@@ -3,6 +3,9 @@ import { EXERCISES_BY_MODULE } from './exercises'
 
 const count = (id: string) => (EXERCISES_BY_MODULE[id] ?? []).length
 
+/** Número de tandas necesarias para considerar un módulo "dominado" */
+export const SESSIONS_GOAL = 5
+
 export const MODULES: OrtografiaModule[] = [
   {
     id: 'b-v',

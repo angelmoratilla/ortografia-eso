@@ -93,10 +93,11 @@ export type Exercise =
 
 export interface ModuleProgress {
   moduleId: ModuleId
-  completed: number
-  total: number
+  completed: number   // ejercicios respondidos (acumulado histórico)
+  total: number       // tamaño total del banco de ejercicios
+  sessions: number    // número de tandas completadas
   xp: number
-  lastPlayed?: string   // ISO date string
+  lastPlayed?: string // ISO date string
   badges: BadgeId[]
 }
 
