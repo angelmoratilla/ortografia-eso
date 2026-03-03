@@ -88,10 +88,10 @@ export const useProgressStore = create<ProgressStore>()(
           // Actualizar módulo
           const moduleProgress = prev.modules[session.moduleId]
           const newCompleted = Math.min(
-            moduleProgress.completed + session.results.length,
+            (moduleProgress.completed ?? 0) + session.results.length,
             moduleProgress.total,
           )
-          const newSessions = moduleProgress.sessions + 1
+          const newSessions = (moduleProgress.sessions ?? 0) + 1
 
           // Insignias nuevas
           const newBadges: BadgeId[] = [...prev.unlockedBadges]
@@ -122,7 +122,7 @@ export const useProgressStore = create<ProgressStore>()(
                   ...moduleProgress,
                   completed: newCompleted,
                   sessions: newSessions,
-                  xp: moduleProgress.xp + xpEarned,
+                  xp: (moduleProgress.xp ?? 0) + xpEarned,
                   lastPlayed: today,
                 },
               },

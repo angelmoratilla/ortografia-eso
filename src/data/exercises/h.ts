@@ -124,7 +124,7 @@ export const H_EXERCISES: Exercise[] = [
   },
   {
     id: 'h-013', moduleId: 'h', type: 'multiple-choice', difficulty: 'facil',
-    question: '¿Cuál es la forma correcta?',
+    question: '¿Cuál es la forma correcta del verbo hacer?',
     options: ['echo', 'hecho', 'eccho'], correctIndex: 1,
     explanation: '"Hecho" (participio de "hacer") lleva H. "Echo" es la primera persona del verbo "echar": yo echo la pelota.',
   },
@@ -162,7 +162,7 @@ export const H_EXERCISES: Exercise[] = [
   },
   {
     id: 'h-019', moduleId: 'h', type: 'fill-blank', difficulty: 'facil',
-    sentence: 'Los ___ son insectos muy trabajadores.',
+    sentence: 'Las ___ son insectos muy trabajadores.',
     options: ['hormigas', 'ormigas', 'hórmigas'], correctIndex: 0,
     explanation: '"Hormigas" lleva H inicial. Hay que aprenderla como palabra de memoria.',
   },
