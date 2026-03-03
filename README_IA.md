@@ -131,6 +131,7 @@ export interface UserProgress {
 }
 export interface ModuleProgress {
   moduleId: ModuleId; completed: number; total: number
+  sessions: number   // tandas completadas; se inicializa a 0 y se incrementa en saveSession
   xp: number; lastPlayed?: string; badges: BadgeId[]
 }
 export type BadgeId = 'first-exercise' | 'module-complete' | 'perfect-score' | 'streak-3' | 'streak-7' | 'master'
@@ -176,11 +177,18 @@ const xpToLevel = (xp: number) => Math.floor(1 + Math.sqrt(xp / 50))
 ```typescript
 if (prev.totalXP === 0 && xpEarned > 0)                               addBadge('first-exercise')
 if (correctCount === session.results.length && results.length >= 5)    addBadge('perfect-score')
-if (newCompleted >= moduleProgress.total)                              addBadge('module-complete')
+if (newSessions >= SESSIONS_GOAL)                                      addBadge('module-complete')  // SESSIONS_GOAL = 5
 if (newStreak >= 3)                                                    addBadge('streak-3')
 if (newStreak >= 7)                                                    addBadge('streak-7')
 // 'master' se concede manualmente (no está implementado aún — deuda técnica)
 ```
+
+### Progreso por tandas (`sessions`)
+- `SESSIONS_GOAL = 5` exportado desde `data/modules.ts`
+- Cada llamada a `saveSession` incrementa `moduleProgress.sessions` en 1
+- La UI muestra `X/5 tandas` y la barra llega al 100 % en la tanda 5
+- Superada la meta, el módulo aparece como "✅ Dominado"; se puede seguir practicando sin límite
+- **Compatibilidad con localStorage antiguo:** todas las sumas usan `?? 0` para tolerar datos guardados antes de añadir el campo `sessions` (`(moduleProgress.sessions ?? 0) + 1`)
 
 ---
 
@@ -203,9 +211,18 @@ const {
 } = useExerciseSession({ exercises, moduleId, onComplete })
 ```
 
-- Baraja los ejercicios con `shuffle()` y toma los primeros 10
+- Usa `selectExercisesProgressive(exercises)` en lugar de `shuffle().slice(0,10)` para garantizar dificultad creciente
 - `checkAnswer` es idempotente: ignora llamadas si `answered === true`
 - `nextExercise` en el último ejercicio llama a `onComplete(SessionResult)` en lugar de avanzar
+
+### `selectExercisesProgressive` (`src/utils/index.ts`)
+```typescript
+selectExercisesProgressive(exercises: Exercise[], batchSize = 10): Exercise[]
+```
+Selecciona `batchSize` ejercicios con distribución progresiva:
+- 40 % fácil (4), 30 % medio (3), 30 % difícil (3)
+- Dentro de cada grupo el orden es aleatorio (Fisher-Yates)
+- Si un nivel tiene menos ejercicios de los necesarios, los huecos se rellenan con sobrantes de otros niveles manteniendo el orden fácil → medio → difícil
 
 ---
 
@@ -329,7 +346,7 @@ Manifiesto en `vite.config.ts` usa `purpose: 'any'` para los PNG y `purpose: 'ma
 
 ## 13. Tests
 
-**Suite completa: 47 tests en 5 archivos, todos en `src/test/`**
+**Suite completa: 52 tests en 5 archivos, todos en `src/test/`**
 
 ```bash
 npx vitest run --reporter=verbose
@@ -337,7 +354,7 @@ npx vitest run --reporter=verbose
 
 | Archivo | Tests |
 |---|---|
-| `utils.test.ts` | 11 — shuffle, moduleProgressPercent, levelProgress, scoreColor |
+| `utils.test.ts` | 16 — shuffle, moduleProgressPercent, levelProgress, scoreColor, **selectExercisesProgressive (5 tests nuevos)** |
 | `MultipleChoiceCard.test.tsx` | 9 — render, callbacks, bloqueo, estilos green/red |
 | `FillBlankCard.test.tsx` | 8 — opciones, inserción, callbacks, estilos |
 | `CorrectErrorCard.test.tsx` | 8 — resaltado error, botones, frase correcta |
@@ -426,4 +443,7 @@ git add . && git commit -m "..." && git push origin main
 | Zustand con persist en localStorage | Sin backend — el progreso debe sobrevivir recargas sin necesitar cuenta de usuario |
 | `vitest/config` en lugar de `vite/config` | Vite 7 + Vitest 4 requieren importar `defineConfig` desde `vitest/config` para que las opciones de `test` sean reconocidas |
 | Framer Motion eliminado de cards de ejercicio | Conflictos de tipos con React 19 en `motion.button`; se usa directamente `<button>` con transiciones CSS |
+| Progreso por tandas en lugar de ejercicios | El banco (~60-74 por módulo) nunca se "agota" — contar tandas (meta: 5) da un objetivo claro y alcanzable |
+| `?? 0` en sumas del store | Protege contra `undefined` en campos nuevos cuando el localStorage viene de versiones anteriores del esquema |
+| `selectExercisesProgressive` en lugar de `shuffle().slice()` | Garantiza que cada tanda empiece con ejercicios fáciles y termine con difíciles, mejorando la curva de aprendizaje |
 | Convención 0=correcto para correct-error y classify | Homogeneíza la lógica de `checkAnswer` — el hook solo necesita comparar con 0 en lugar de manejar booleanos |
